@@ -1,0 +1,22 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+    include:
+      - "*"
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - script: |
+      wget -q -O - https://swift.org/keys/all-keys.asc | gpg --import -
+      curl -L https://swiftlang.github.io/swiftly/swiftly-install.sh | bash -s -- --disable-confirmation
+      swiftly install latest
+    displayName: "Install Swift"
+
+  - script: |
+      swift test
+    displayName: "Run Tests"
