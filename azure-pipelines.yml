@@ -12,9 +12,9 @@ pool:
 
 steps:
   - script: |
-      wget -q -O - https://swift.org/keys/all-keys.asc | gpg --import -
-      curl -L https://swiftlang.github.io/swiftly/swiftly-install.sh | bash -s -- --disable-confirmation
-      swiftly install latest
+      curl -O https://download.swift.org/swiftly/linux/swiftly-$(uname -m).tar.gz
+      tar zxf swiftly-$(uname -m).tar.gz
+      ./swiftly init --quiet-shell-followup --assume-yes
     displayName: "Install Swift"
 
   - script: |
