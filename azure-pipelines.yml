@@ -53,3 +53,5 @@ steps:
   - template: steps/test/security-scan/gitleaks.yml@templates
     parameters:
       scanGitHistory: false
+
+  - task: dependabot@2
