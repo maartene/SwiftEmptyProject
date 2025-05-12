@@ -10,34 +10,46 @@ trigger:
 pool:
   vmImage: ubuntu-22.04
 
+resources:
+  repositories:
+    - repository: templates
+      name: NSPAAS/azure-devops-templates
+      type: git
+
 steps:
-- task: SonarQubePrepare@7
-  inputs:
-    SonarQube: 'FUNDOJO SonarQube EE P'
-    scannerMode: 'cli'
-    configMode: 'manual'
-    cliProjectKey: 'FUNDOJO_{{projectName}}'
-    cliProjectName: 'FUNDOJO {{projectName}}'
-    cliSources: '.'
-    extraProperties: |
-      sonar.swift.coverage.reportPaths=Coverage.report
-      sonar.exclusions=Package.swift
+  - task: SonarQubePrepare@7
+    inputs:
+      SonarQube: "FUNDOJO SonarQube EE P"
+      scannerMode: "cli"
+      configMode: "manual"
+      cliProjectKey: "FUNDOJO_{{projectName}}"
+      cliProjectName: "FUNDOJO {{projectName}}"
+      cliSources: "."
+      extraProperties: |
+        sonar.swift.coverage.reportPaths=Coverage.report
+        sonar.exclusions=Package.swift
 
-- script: |
-    curl -O https://download.swift.org/swiftly/linux/swiftly-$(uname -m).tar.gz
-    tar zxf swiftly-$(uname -m).tar.gz
-    ./swiftly init --quiet-shell-followup --assume-yes
-  displayName: "Install Swift"
+  - script: |
+      curl -O https://download.swift.org/swiftly/linux/swiftly-$(uname -m).tar.gz
+      tar zxf swiftly-$(uname -m).tar.gz
+      ./swiftly init --quiet-shell-followup --assume-yes
+    displayName: "Install Swift"
 
-- script: |
-    swift test --enable-code-coverage
-    /home/vsts/.local/share/swiftly/bin/llvm-cov show -instr-profile=.build/debug/codecov/default.profdata .build/debug/{{projectName}}PackageTests.xctest > Coverage.report
-  displayName: "Run Tests"
+  - script: |
+      swift test --enable-code-coverage
+      /home/vsts/.local/share/swiftly/bin/llvm-cov show -instr-profile=.build/debug/codecov/default.profdata .build/debug/{{projectName}}PackageTests.xctest > Coverage.report
+    displayName: "Run Tests"
 
-- task: SonarQubeAnalyze@7
-  inputs:
-    jdkversion: 'JAVA_HOME_21_X64'
+  - task: SonarQubeAnalyze@7
+    inputs:
+      jdkversion: "JAVA_HOME_21_X64"
 
-- task: SonarQubePublish@7
-  inputs:
-    pollingTimeoutSec: '300'
+  - task: SonarQubePublish@7
+    inputs:
+      pollingTimeoutSec: "300"
+
+  - template: steps/test/security-scan/owasp-dependency-check.yml@templates
+
+  - template: steps/test/security-scan/gitleaks.yml@templates
+    parameters:
+      scanGitHistory: false
