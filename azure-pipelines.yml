@@ -13,7 +13,7 @@ pool:
 resources:
   repositories:
     - repository: templates
-      name: NSPAAS/azure-devops-templates
+      name: CICD/pipeline-templates
       type: git
 
 steps:
