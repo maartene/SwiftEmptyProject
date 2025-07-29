@@ -49,9 +49,12 @@ steps:
       pollingTimeoutSec: "300"
 
   - template: steps/test/security-scan/owasp-dependency-check.yml@templates
+    parameters:
+            excludePath: "**/Gemfile.lock"
 
   - template: steps/test/security-scan/gitleaks.yml@templates
     parameters:
       scanGitHistory: false
+      configFile: ".azuredevops/gitleaks.toml"
 
   - task: dependabot@2
