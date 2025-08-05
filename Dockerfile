@@ -91,7 +91,7 @@ USER swiftuser:swiftuser
 # If this application exposes a network post, let Docker bind to port 8080
 # EXPOSE 8080
 
-CMD "./{{projectName}}"
+CMD ["./{{projectName}}"]
 
 #===================
 # VAPOR Only
